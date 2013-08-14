@@ -5,14 +5,14 @@ import gays.tools.enums.EArguQuantity;
 import java.util.*;
 
 public class Argument {
-	private ArrayList<String> markSign;
-	private String descript;
-	private String key;
-    private String value="";
-    private List<Object> values = new ArrayList<Object>();
-	private boolean set = false;
-	private ArguConfig config=null;
-	public EArguQuantity quantity = EArguQuantity.QUESTION;
+	private ArrayList<String> 	markSign;
+	private String 				descript;
+	private String 				key;
+    private String 				value="";
+    private List<Object> 		values = new ArrayList<Object>();
+	private boolean 			set = false;
+	private ArguConfig 			config=null;
+	public EArguQuantity 		quantity = EArguQuantity.QUESTION;
         
 	public Argument(String m, ArguConfig config) {
 		markSign = new ArrayList<String>();
@@ -35,7 +35,7 @@ public class Argument {
 		key = ms[0];
 		for (String s : ms) {
 			markSign.add(s);
-		}
+		}		
 	}
 	
 	public void setOn(){
@@ -234,7 +234,7 @@ public class Argument {
      * @return the value
      */
     public String getValue() {
-        if(value.isEmpty()) return String.valueOf(config.defaultVal);
+        if(value.isEmpty() && config!=null) return String.valueOf(config.defaultVal);        
         else return value;
     }
     

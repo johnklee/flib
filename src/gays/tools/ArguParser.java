@@ -28,10 +28,8 @@ public class ArguParser {
 	/**
 	 * BD : Constructor to receive argument defination and actual argument from console.
 	 * 
-	 * @param def
-	 *            : Defination of argument
-	 * @param arg
-	 *            : Argument from console
+	 * @param def: Defination of argument
+	 * @param arg: Argument from console
 	 */
 	public ArguParser(HashMap<String, Object> def, String[] arg) {
 		this();
@@ -49,7 +47,7 @@ public class ArguParser {
 		Set<Entry<String, Object>> s = def.entrySet();
 		Iterator<Entry<String, Object>> iter = s.iterator();
 		while (iter.hasNext()) {
-			Entry<String, Object> e = iter.next(); // defination of argument
+			Entry<String, Object> e = iter.next(); // definition of argument
 			Object key = e.getValue();
 			Argument argStruct = null;
 			if (key instanceof String) {
@@ -222,7 +220,7 @@ public class ArguParser {
 		defineOfArgu.put("-a,--auto", "Auto Setup.");
 		defineOfArgu.put("-b,--block", "Block Until...");
 		defineOfArgu.put("-d,-D,--decode", "Decode");
-		defineOfArgu.put("-c,-C,--Check,-3", "Check Mail...");
+		defineOfArgu.put("-c,-C,--Check", new ArguConfig("Check Mail...", EArguQuantity.SIGN));
 		defineOfArgu.put("-e,-E,--eg", "Show Example");
 		defineOfArgu.put("-m,--multiple", new ArguConfig("Multiple argument(s)", EArguQuantity.MULTIPLE));
 		defineOfArgu.put("-s,--single", new ArguConfig("single", EArguQuantity.SINGLE));
@@ -234,16 +232,17 @@ public class ArguParser {
 		ArguParser parser = new ArguParser(defineOfArgu, fargs);
 
 		/* Step3 : Fetch argument and analysing */
+		System.out.printf("\t[Info] Parsing argument:\n");
 		if(parser.isSuccessive)
 		{
 			ArrayList<Argument> argSet = parser.getSettingArgu();
 			for (Argument a : argSet) {
 				System.out.print("You have give " + a.getKey() + " which means: " + a.getDescript());
 				if (!a.getValue().isEmpty()) {
-					System.out.println(" with value=" + a.getValue());
+					System.out.printf(" with value='%s'\n", a.getValue());
 				} else if(a.getValues().size()>0){
 					List<Object> vals = a.getValues();
-					System.out.printf(" with value=%s", vals.get(0));
+					System.out.printf(" with value='%s'\n", vals.get(0));
 					for(int i=1; i<vals.size(); i++) System.out.printf(", %s", vals.get(i));
 					System.out.println();
 					
@@ -253,6 +252,7 @@ public class ArguParser {
 			}
 		}
 		System.out.println();
+		System.out.printf("\t[Info] Show argument usage:\n");
 		parser.showArgus();
 	}
 }

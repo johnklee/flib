@@ -79,7 +79,7 @@ public class ArguParser {
 		isSuccessive = true;
 	}
 
-	/*
+	/**
 	 * BD : Show Argument messages.
 	 */
 	public String showArgus() {
@@ -142,8 +142,8 @@ public class ArguParser {
 	}
 
 	/**
-	 * 簡介 : 藉由參數的KEY獲取對應參數(-k)由Console設定的值(value). (-k=value) 
-	 * @param key: 參數的Key
+	 * BD : Retrieve argument value with given argument name as <key>.
+	 * @param key: Argument name
 	 * @return
 	 */
 	public String getArguValue(String key) {
@@ -155,8 +155,8 @@ public class ArguParser {
 	}
 	
 	/**
-	 * BD: 藉由參數的KEY獲取對應參數(-k)由Console設定的值(value). (-k=value) 並轉為整數型態.
-	 * @param key: 參數的Key
+	 * BD: Retrieve argument value in Int type with given argument name as <key>;
+	 * @param key: Argument name
 	 * @return
 	 */
 	public Integer getArguIntValue(String key) 

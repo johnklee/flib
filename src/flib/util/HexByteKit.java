@@ -78,10 +78,17 @@ public class HexByteKit {
         return hexStr.toString().toUpperCase();
     }
 
+    public static String Byte2Hex(byte[] b, int offset, int endian)
+    {
+    	return Byte2Hex(b, offset, b.length, "", endian);
+    }
+    
     public static String Byte2Hex(byte[] b, String sep, int endian)
     {
     	return Byte2Hex(b, 0, b.length, sep, endian);
     }
+    
+    public static String Byte2Hex(byte[] b, String sep){return Byte2Hex(b, sep, 0);}
     
     /**
      * BD : Used to transfer byte array into hex string.

@@ -234,7 +234,7 @@ public class Argument {
      * @return the value
      */
     public String getValue() {
-        if(value.isEmpty() && config!=null) return String.valueOf(config.defaultVal);        
+        if(value.isEmpty() && config!=null) return config.defaultVal;        
         else return value;
     }
     

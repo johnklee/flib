@@ -11,7 +11,7 @@ public class Argument {
     private String 				value="";
     private List<Object> 		values = new ArrayList<Object>();
 	private boolean 			set = false;
-	private ArguConfig 			config=null;
+	public ArguConfig 			config=null;
 	public EArguQuantity 		quantity = EArguQuantity.QUESTION;
         
 	public Argument(String m, ArguConfig config) {

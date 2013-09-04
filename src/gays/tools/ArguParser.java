@@ -1,13 +1,17 @@
 package gays.tools;
 
-import flib.env.Envset;
-import flib.proto.IDebug;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Logger;
+
 import flib.util.JDebug;
 import gays.tools.enums.EArguQuantity;
-
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Logger;
+import gays.tools.enums.EArguRestrict;
 
 /**
  * BD : Simple tool kit to parse the argument from console
@@ -69,6 +73,16 @@ public class ArguParser {
 				//this.showArgus();
 				return;
 			}
+			else
+			{
+				if(!argStruct.isSet() &&
+				   argStruct.config!=null && 
+				   argStruct.config.restrict.equals(EArguRestrict.Required))
+				{
+					System.err.printf("\t[Error] Argument='%s: %s' is required!\n", argStruct.getKey(), argStruct.getDescript());
+					return;
+				}
+			}
 			
 			/*
 			 * for (String a : argList) { if (argStruct.checkArgu(a)) {
@@ -92,7 +106,9 @@ public class ArguParser {
 			//System.out.printf("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity);
 			//System.out.println(a.getKey() + ": " + a.getDescript());
 			if(a.getKey().startsWith("--")) dsb.append(String.format("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity));
-			else ssb.append(String.format("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity));
+			else ssb.append(String.format("%s: %s (%s)", a.getKey(), a.getDescript(), a.quantity));
+			if(a.config!=null && a.config.restrict.equals(EArguRestrict.Required)) ssb.append(" *");
+			ssb.append("\r\n");
 		}
 		System.out.println(String.format("%s%s", ssb.toString(), dsb.toString()));
 		return String.format("%s%s", ssb.toString(), dsb.toString());
@@ -215,14 +231,14 @@ public class ArguParser {
 	public static void main(String args[]) {
 		/* The first mark of argument will be the unique key for searching */
 		/* Step1 : Define argument meaning */
-		String fargs[] = { "-s", "single value", "-a=test", "-b", "-m", "value1", "value2" , "value3", "-c" };
+		String fargs[] = { "-s", "single value", "-a=test", "-b",  "-m", "value1", "value2" , "value3", "-c" };
 		HashMap<String, Object> defineOfArgu = new HashMap<String, Object>();
 		defineOfArgu.put("-a,--auto", "Auto Setup.");
 		defineOfArgu.put("-b,--block", "Block Until...");
 		defineOfArgu.put("-d,-D,--decode", "Decode");
 		defineOfArgu.put("-c,-C,--Check", new ArguConfig("Check Mail...", EArguQuantity.SIGN));
 		defineOfArgu.put("-e,-E,--eg", "Show Example");
-		defineOfArgu.put("-m,--multiple", new ArguConfig("Multiple argument(s)", EArguQuantity.MULTIPLE));
+		defineOfArgu.put("-m,--multiple", new ArguConfig("Multiple argument(s)", EArguQuantity.MULTIPLE, EArguRestrict.Required));
 		defineOfArgu.put("-s,--single", new ArguConfig("single", EArguQuantity.SINGLE));
 
 		/*
@@ -238,11 +254,11 @@ public class ArguParser {
 			ArrayList<Argument> argSet = parser.getSettingArgu();
 			for (Argument a : argSet) {
 				System.out.print("You have give " + a.getKey() + " which means: " + a.getDescript());
-				if (!a.getValue().isEmpty()) {
+				if (a.getValue()!=null && !a.getValue().isEmpty()) {
 					System.out.printf(" with value='%s'\n", a.getValue());
 				} else if(a.getValues().size()>0){
 					List<Object> vals = a.getValues();
-					System.out.printf(" with value='%s'\n", vals.get(0));
+					System.out.printf(" with value='%s'", vals.get(0));
 					for(int i=1; i<vals.size(); i++) System.out.printf(", %s", vals.get(i));
 					System.out.println();
 					

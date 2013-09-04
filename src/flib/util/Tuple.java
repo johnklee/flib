@@ -15,6 +15,7 @@ public class Tuple {
 	
 	public int size(){return datas.size();}
 	public Object get(int i){return datas.get(i);}
+	public Object set(int i, Object o){return datas.set(i, o);}
 	public void put(Object o){datas.add(o);}
 	public Object get(int i, Object def){
 		if(i<datas.size()) return get(i);

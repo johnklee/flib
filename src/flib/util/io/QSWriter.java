@@ -28,6 +28,8 @@ public class QSWriter extends Writer{
 	}
 	public QSWriter(String of)throws Exception{this(of, false);}
 	
+	public void reopen(String fn)throws IOException{reopen(fn, false);}
+	public void reopen(String fn, boolean append)throws IOException{reopen(new File(fn), append);}
 	public void reopen(File of)throws IOException {reopen(of, false);}
 	public void reopen(File of, boolean append) throws IOException
 	{
@@ -36,14 +38,22 @@ public class QSWriter extends Writer{
 		bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(of, append), ENCODING));
 	}
 	
-	public void line(String line) throws IOException
+	/**
+	 * BD: Write <line> into file and append <NEW_LINE> automatically.
+	 * @param line: Line to be written into file.
+	 * @throws IOException
+	 */
+	public void line(String line, boolean flush) throws IOException
 	{
 		if(bw!=null)
 		{
 			bw.append(String.format("%s%s", line, NEW_LINE));
+			if(flush) bw.flush();
 		}
 		else throw new IOException("Not open yet");
 	}
+	
+	public void line(String line) throws IOException{line(line, true);}
 	
 	@Override
 	public void close()
@@ -60,6 +70,9 @@ public class QSWriter extends Writer{
 		}		
 	}
 
+	/**
+	 * BD: Flush buffer content.
+	 */
 	@Override
 	public void flush() throws IOException {
 		if(bw!=null)

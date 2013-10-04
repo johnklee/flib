@@ -38,6 +38,12 @@ public class QSReader implements Iterator<String>, Iterable<String>{
 		this.FILE_TYPE = type;
 	}
 	
+	public String line() throws IOException
+	{
+		if(br!=null) return br.readLine();
+		return null;
+	}
+	
 	public QSReader(String fn, EFileType type){this(new File(fn), type);}
 	
 	private class InnerIterator implements Iterator<String> {

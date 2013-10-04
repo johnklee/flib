@@ -49,7 +49,14 @@ public class TimeStr {
 		return 0;
 	}
 	
-	public String toString(){		
+	@Override
+	public String toString()
+	{
+		return toString(false);
+	}
+	
+	public String toString(boolean withMS){		
+		long mSec = timeElapse%1000;
 		long totSec = timeElapse/1000;
 		long sec = totSec%60;
 		long totMin = totSec/60;
@@ -62,13 +69,15 @@ public class TimeStr {
 		if(hr>0) sb.append(String.format(" %d hr%s", hr, totHr>1?"s":""));
 		if(min>0) sb.append(String.format(" %d min%s", min, totMin>1?"s":""));
 		if(sec>0) sb.append(String.format(" %d sec", sec));
-		if(sb.toString().trim().isEmpty()) return String.format("%d ms", timeElapse);
+		if(sb.toString().trim().isEmpty()||withMS) return String.format("%s %d ms", sb.toString(), mSec).trim();		
 		return sb.toString().trim();
 	}
 	
-	public static String toStringFrom(long sts){return new TimeStr(System.currentTimeMillis()-sts).toString();}
+	public static String ToStringFrom(long sts){return ToStringFrom(sts, false);}
+	public static String ToStringFrom(long sts, boolean hasMS){return new TimeStr(System.currentTimeMillis()-sts).toString(hasMS);}
 	
-	public static String toString(long ts){return new TimeStr(ts).toString();}
+	public static String ToString(long ts){return new TimeStr(ts).toString();}
+	public static String ToString(long ts, boolean hasMS){return new TimeStr(ts).toString(hasMS);}
 	
 	public static int Daydiff(Date from, Date to)
 	{
@@ -109,7 +118,7 @@ public class TimeStr {
 	public static void main(String args[]) throws Exception
 	{
 		TimeStr ts = new TimeStr(123000456);
-		System.out.printf("\t[Test] Time elapse %s\n", TimeStr.toString(45678));
+		System.out.printf("\t[Test] Time elapse %s\n", TimeStr.ToString(45678, true));
 		System.out.printf("\t[Test] ts=%s\n", ts);
 		Date now = new Date();
 		Thread.sleep(50);
@@ -117,7 +126,7 @@ public class TimeStr {
 		System.out.printf("\t[Test] ts=%s\n", ts.timeDiff(now, new Date(), Unit.SECOND));
 		long st = System.currentTimeMillis();
 		Thread.sleep(100);
-		System.out.printf("\t[Test] %s\n", TimeStr.toStringFrom(st));
+		System.out.printf("\t[Test] %s\n", TimeStr.ToStringFrom(st));
 	}
 }
 

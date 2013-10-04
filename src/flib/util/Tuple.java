@@ -17,10 +17,14 @@ public class Tuple {
 	public Object get(int i){return datas.get(i);}
 	public Object set(int i, Object o){return datas.set(i, o);}
 	public void put(Object o){datas.add(o);}
+	public void puts(Object ...objs){for(Object o:objs) datas.add(o);}
 	public Object get(int i, Object def){
 		if(i<datas.size()) return get(i);
 		else return def;
 	}
+	
+	public String getStr(int i){return (String)datas.get(i);}
+	public int getInt(int i){return (Integer)datas.get(i);}
 	
 	@Override
 	public String toString()

@@ -24,6 +24,7 @@ public class ArguParser {
 	private Logger 						debugKit;
 	public boolean 						isSuccessive = false;
 	public List<String>					lastArgument = new LinkedList<String>();
+	public Argument						missArgument=null;
 
 	public ArguParser() {
 		debugKit = JDebug.getLogger("ArguParser");
@@ -79,7 +80,8 @@ public class ArguParser {
 				   argStruct.config!=null && 
 				   argStruct.config.restrict.equals(EArguRestrict.Required))
 				{
-					System.err.printf("\t[Error] Argument='%s: %s' is required!\n", argStruct.getKey(), argStruct.getDescript());
+					//System.err.printf("\t[Error] Argument='%s: %s' is required!\n", argStruct.getKey(), argStruct.getDescript());
+					missArgument = argStruct;
 					return;
 				}
 			}

@@ -48,9 +48,11 @@ public class ArguParser {
 			}
 		}
 		
+		//System.out.printf("\t[Test] def=%d\n", def.size());
 		argsSet = new HashMap<String, Argument>();
 		Set<Entry<String, Object>> s = def.entrySet();
 		Iterator<Entry<String, Object>> iter = s.iterator();
+		boolean isErr=false;
 		while (iter.hasNext()) {
 			Entry<String, Object> e = iter.next(); // definition of argument
 			Object key = e.getValue();
@@ -60,21 +62,24 @@ public class ArguParser {
 			} else if (key instanceof ArguConfig) {
 				argStruct = new Argument(e.getKey(), (ArguConfig) e.getValue());
 			} else {
+				System.err.printf("\t[Error] Illegal argument setting=%s!\n", key);
 				debugKit.warning(String.format("Illegal argument setting! (%s)", key));
 				continue;
 			}
 			argsSet.put(argStruct.getKey(), argStruct);
+			//System.out.printf("\t[Test] %s\n", argStruct);
 
 			/* Parsing argument from command line */
-			if(!argStruct.parseArgu(argList))
+			if(!isErr && !argStruct.parseArgu(argList))
 			{
 				/*Handle: Fail to parsing*/
 				debugKit.warning(String.format("Parsing error on argument->%s!", argStruct));
-				System.err.printf("\t[Error] Parsing error on argument->%s!\n", argStruct);
+				//System.err.printf("\t[Error] Parsing error on argument->%s!\n", argStruct);
 				//this.showArgus();
-				return;
+				isErr=true;
+				//continue;
 			}
-			else
+			if(!isErr)
 			{
 				if(!argStruct.isSet() &&
 				   argStruct.config!=null && 
@@ -82,7 +87,7 @@ public class ArguParser {
 				{
 					//System.err.printf("\t[Error] Argument='%s: %s' is required!\n", argStruct.getKey(), argStruct.getDescript());
 					missArgument = argStruct;
-					return;
+					//return;
 				}
 			}
 			
@@ -109,6 +114,7 @@ public class ArguParser {
 			//System.out.println(a.getKey() + ": " + a.getDescript());
 			if(a.getKey().startsWith("--")) dsb.append(String.format("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity));
 			else ssb.append(String.format("%s: %s (%s)", a.getKey(), a.getDescript(), a.quantity));
+			
 			if(a.config!=null && a.config.restrict.equals(EArguRestrict.Required)) ssb.append(" *");
 			ssb.append("\r\n");
 		}
@@ -233,7 +239,8 @@ public class ArguParser {
 	public static void main(String args[]) {
 		/* The first mark of argument will be the unique key for searching */
 		/* Step1 : Define argument meaning */
-		String fargs[] = { "-s", "single value", "-a=test", "-b",  "-m", "value1", "value2" , "value3", "-c" };
+		//String fargs[] = { "-s", "single value", "-a=test", "-b",  "-m", "value1", "value2" , "value3", "-c" };
+		String fargs[] = {  };
 		HashMap<String, Object> defineOfArgu = new HashMap<String, Object>();
 		defineOfArgu.put("-a,--auto", "Auto Setup.");
 		defineOfArgu.put("-b,--block", "Block Until...");
@@ -242,7 +249,7 @@ public class ArguParser {
 		defineOfArgu.put("-e,-E,--eg", "Show Example");
 		defineOfArgu.put("-m,--multiple", new ArguConfig("Multiple argument(s)", EArguQuantity.MULTIPLE, EArguRestrict.Required));
 		defineOfArgu.put("-s,--single", new ArguConfig("single", EArguQuantity.SINGLE));
-
+		//System.out.printf("\t[Test] DF=%d\n", defineOfArgu.size());
 		/*
 		 * Step2 : Pass argument defination and actualy argu read from console
 		 * into Class:ArguParser

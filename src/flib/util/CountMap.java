@@ -2,16 +2,41 @@ package flib.util;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.PriorityQueue;
+import flib.util.CountMap.Pair;
 
-public class CountMap {
-	public class Pair{
+public class CountMap implements Iterable<Pair>{
+	public static class Pair{
 		public Integer cnt=1;
 		public Object key;
 		public Pair(Object k){key=k;}
+		public Pair(Object k, int c){key=k; cnt=c;}
 		public void count(){cnt++;}
+		public void count(int c){cnt+=c;}
 		@Override
 		public String toString(){return String.format("%s(%d)", key, cnt);}
+	}
+	
+	public class Iter implements Iterator<Pair>
+	{
+		PriorityQueue<Pair> pq;
+		
+		public Iter(PriorityQueue<Pair> pq){this.pq = pq;}
+		
+		public boolean hasNext() {
+			return !pq.isEmpty();
+		}
+
+		public Pair next() {
+			return pq.poll();
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+			
+		}
+		
 	}
 	private EOrder order=EOrder.Dsc;
 	private HashMap<Object,Pair> cntMap = new HashMap<Object,Pair>();
@@ -48,6 +73,18 @@ public class CountMap {
 		Pair p = cntMap.get(o);
 		if(p==null) cntMap.put(o, new Pair(o));
 		else p.count();
+	}
+	
+	/**
+	 * BD: Count Input Object
+	 * @param o: Object to count
+	 * @param cnt: Count <cnt>
+	 */
+	public void count(Object o, int cnt)
+	{
+		Pair p = cntMap.get(o);
+		if(p==null) cntMap.put(o, new Pair(o, cnt));
+		else p.count(cnt);
 	}
 	
 	/**
@@ -97,7 +134,7 @@ public class CountMap {
 	public static void main(String args[])
 	{
 		CountMap cntMap = new CountMap();
-		cntMap.count("a");
+		cntMap.count("a", 4);
 		cntMap.count("a");
 		cntMap.count("a");
 		cntMap.count("b");
@@ -106,5 +143,19 @@ public class CountMap {
 		System.out.printf("\t[Info] Desc:\n%s\n", cntMap);
 		cntMap.asc();
 		System.out.printf("\t[Info] Asc:\n%s\n", cntMap);
+	}
+
+	public Iterator<Pair> iterator() {
+		PriorityQueue<Pair> pq;
+		switch(order)
+		{
+		case Dsc:
+			pq = new PriorityQueue<Pair>(10,dscCmp);
+			break;
+		default:
+			pq = new PriorityQueue<Pair>(10,ascCmp);				
+		}
+		for(Pair p:cntMap.values()) pq.add(p);
+		return new Iter(pq);
 	}
 }

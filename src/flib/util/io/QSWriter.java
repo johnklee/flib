@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import flib.env.Envset;
+
 public class QSWriter extends Writer{
 	public File 				outFile = null;
-	public String				NEW_LINE = "\r\n";
+	public String				NEW_LINE = Envset.BreakLine;
 	public BufferedWriter 		bw=null;
 	public static String 		ENCODING="UTF-8";
 	

@@ -249,7 +249,7 @@ public class Argument {
     {
     	StringBuffer strBuf = new StringBuffer("Argu(");
     	strBuf.append(String.format("%s:%s", key, descript));
-    	if(config.defaultVal!=null) strBuf.append(String.format(",default=%s", config.defaultVal));
+    	if(config!=null && config.defaultVal!=null) strBuf.append(String.format(",default=%s", config.defaultVal));
     	strBuf.append(")");
     	return strBuf.toString();
     }

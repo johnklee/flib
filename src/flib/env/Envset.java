@@ -7,7 +7,7 @@ import flib.util.JDebug.EFormatType;
 import java.util.logging.Level;
 
 public class Envset {
-    public static String 		breakLine = "\r\n";
+    public static String 		BreakLine = "\r\n";
     private static boolean 		envCheckFlag = false;
     private static boolean 		debugFlag = false;
     private static boolean 		debugFileFlag = false;
@@ -19,10 +19,17 @@ public class Envset {
 
     static{
         String osType = System.getProperty("os.name");
-        if(osType.contains("Windows")) {
-            breakLine = "\r\n";
-        } else {
-            breakLine = "\n";
+        if(osType.indexOf("win") >= 0) 
+        {
+            BreakLine = "\r\n";
+        } 
+        else if(osType.indexOf("nix") >= 0 || osType.indexOf("nux") >= 0)
+        {
+            BreakLine = "\n";
+        } 
+        else if(osType.indexOf("mac") >= 0)
+        {
+        	BreakLine = "\r";
         }
     }
 
@@ -121,7 +128,7 @@ public class Envset {
     }
 
 	public static String getBreakLine() {
-		return breakLine;
+		return BreakLine;
 	}
 
 	public static JDebug.EFormatType getFormatType() {

@@ -79,7 +79,7 @@ public class TimeStr {
 	public static String ToString(long ts){return new TimeStr(ts).toString();}
 	public static String ToString(long ts, boolean hasMS){return new TimeStr(ts).toString(hasMS);}
 	
-	public static int Daydiff(Date from, Date to)
+	public static long Daydiff(Date from, Date to)
 	{
 		if(from.before(to))
 		{
@@ -95,7 +95,7 @@ public class TimeStr {
 					int fromDayOfMonth = fromCal.get(Calendar.DAY_OF_MONTH); 
 					if(toDayOfMonth==fromDayOfMonth)
 					{
-						return 1;
+						return 0;
 					}
 					else
 					{
@@ -109,7 +109,13 @@ public class TimeStr {
 			}
 			else
 			{
-				return (int)(((to.getTime()-from.getTime())/24*60*60)+1);
+				long timeDiff = to.getTime()-from.getTime();
+				long dayCnt = timeDiff/(24*60*60*1000);
+				long rsd = timeDiff%(24*60*60*1000);
+				int od = toCal.get(Calendar.DAY_OF_YEAR);
+				toCal.add(Calendar.MILLISECOND, (int)rsd);
+				if(toCal.get(Calendar.DAY_OF_YEAR)==od) return dayCnt;
+				else return dayCnt+1;
 			}
 		}
 		return 0;

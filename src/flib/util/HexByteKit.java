@@ -36,7 +36,7 @@ public class HexByteKit {
         		for(int i=0; i<32-ob; i++) bitStrBuf.append("0");
         	}
         	bitStrBuf.append(valInBin);
-        	System.out.printf("\t[Test] %s\n", bitStrBuf.toString());
+        	//System.out.printf("\t[Test] %s\n", bitStrBuf.toString());
         	return Bin2Int(bitStrBuf.toString());
     	}
     	return null;

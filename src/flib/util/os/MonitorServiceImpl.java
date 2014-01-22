@@ -12,6 +12,12 @@ import java.util.regex.Pattern;
 import flib.util.ExecCmd;
 import flib.util.os.proto.IMonitorService;
 
+/**
+ * Ref:
+ * 	- http://viralpatel.net/blogs/getting-jvm-heap-size-used-memory-total-memory-using-java-runtime/
+ * @author John
+ *
+ */
 public class MonitorServiceImpl implements IMonitorService{  
     public  static final int CPUTIME = 5000;  
     private static final int PERCENT = 100;  
@@ -20,12 +26,12 @@ public class MonitorServiceImpl implements IMonitorService{
                                     + "\\system32\\wbem\\wmic.exe process get Caption,CommandLine,"  
                                     + "KernelModeTime,ReadOperationCount,ThreadCount,UserModeTime,WriteOperationCount";  
     private long[] initCpuInfo = null;  
-    public  static String osName;
+    public  static String OsName;
       
     public MonitorServiceImpl(){  
-    	osName = System.getProperty("os.name");  
+    	OsName = System.getProperty("os.name");  
         try{  
-            if(osName.startsWith("windows"))
+            if(OsName.startsWith("windows"))
             {
             	initCpuInfo = readCpu(Runtime.getRuntime().exec(PROC_CMD));
             }
@@ -38,11 +44,11 @@ public class MonitorServiceImpl implements IMonitorService{
     public MonitorInfoBean getMonitorInfoBean() throws Exception {  
         int kb = 1024;  
           
-        // 可使用內存  
+        // JVM 可使用內存  
         long totalMemory = Runtime.getRuntime().totalMemory() / kb;  
-        // 剩餘內存  
+        // JVM 剩餘內存  
         long freeMemory = Runtime.getRuntime().freeMemory() / kb;  
-        // 最大可使用內存  
+        // JVM 最大可使用內存  
         long maxMemory = Runtime.getRuntime().maxMemory() / kb;  
   
         OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory  
@@ -59,7 +65,7 @@ public class MonitorServiceImpl implements IMonitorService{
         //long freePhysicalMemorySize = osmxb.getFreePhysicalMemorySize() / kb;  
         // 已使用的物理內存  
         long usedMemory = 0;
-        //long usedMemory = (osmxb.getTotalPhysicalMemorySize() - osmxb.getFreePhysicalMemorySize())  / kb;  
+        //long usedMemory = (osmxb.getTotalPhysicalMemorySize() - osmxb.getFreePhysicalMemorySize())  / kb;         
   
         // 獲得線程總數  
         ThreadGroup parentThread;  
@@ -71,6 +77,38 @@ public class MonitorServiceImpl implements IMonitorService{
         double cpuRatio = 0;  
         if (osName.toLowerCase().startsWith("windows")) 
         {             
+        	// wmic os get TotalVisibleMemorySize,FreePhysicalMemory
+        	ExecCmd exec = new ExecCmd();
+        	StringBuffer msgBuf = new StringBuffer();
+        	exec.exec("wmic os get TotalVisibleMemorySize,FreePhysicalMemory", msgBuf);
+        	//String stdout = exec.execWithStdoutReturn("wmic os get TotalVisibleMemorySize,FreePhysicalMemory", false);
+        	String msg[] = msgBuf.toString().trim().split("\n");
+        	String typ[] = msg[0].trim().split("\\s+");
+        	for(int i=1; i<msg.length; i++)
+        	{
+        		if(msg[i].trim().isEmpty()) continue;
+        		else
+        		{
+        			String val[] = msg[i].trim().split("\\s+");
+        			if(val.length==2)
+        			{
+        				if(typ[0].trim().equals("TotalVisibleMemorySize"))
+        				{
+        					totalMemorySize = Integer.valueOf(val[0]);
+        					freePhysicalMemorySize = Integer.valueOf(val[1]);        					
+        				}
+        				else
+        				{
+        					totalMemorySize = Integer.valueOf(val[1]);
+        					freePhysicalMemorySize = Integer.valueOf(val[0]);        					
+        				}
+        				usedMemory = totalMemorySize - freePhysicalMemorySize;
+        				break;
+        			}
+        			//else System.err.printf("\t[Test] %s\n", msg[i]);
+        		}
+        	}
+        	//System.out.printf("\t[Test] Physical Memory info:\n%s\n", msgBuf.toString());
             cpuRatio = this.getCpuRatioForWindows();  
         }  
         else if(osName.toLowerCase().startsWith("linux"))
@@ -108,7 +146,7 @@ public class MonitorServiceImpl implements IMonitorService{
         infoBean.setMaxMemory(maxMemory);  
         infoBean.setOsName(osName);  
         infoBean.setTotalJVMMemory(totalMemory);  
-        infoBean.setTotalMemorySize(totalMemorySize);  
+        infoBean.setTotalPhyscailMemorySize(totalMemorySize);  
         infoBean.setTotalThread(totalThread);  
         infoBean.setUsedPhysicalMemory(usedMemory);  
         infoBean.setCpuRatio(cpuRatio);  
@@ -206,20 +244,21 @@ public class MonitorServiceImpl implements IMonitorService{
     	MonitorServiceImpl monitorSrvImpl = new MonitorServiceImpl();    	
     	Set<Integer> testSet = new HashSet<Integer>();
     	MonitorInfoBean pb=null;
+    	System.out.printf("\t[Info] OS Name=%s\n", MonitorServiceImpl.OsName);
     	for(int i=0; i<1000000; i++)
     	{
     		testSet.add(i);
     		
     		if(i%100000==0)
     		{
-    			MonitorInfoBean bean = monitorSrvImpl.getMonitorInfoBean();
-    			System.out.printf("\t[Info] Set size=%d...\n", testSet.size());
-    			System.out.printf("\t[Info] Total JVM Memory Size=%d KB (%s)\n", bean.getTotalJVMMemory()/1024, pb!=null?pb.diffTotalJVMSize(bean):"-");
-            	System.out.printf("\t[Info] Free JVM Memory Size=%d KB (%s)\n", bean.getFreeJVMMemory()/1024, pb!=null?pb.diffFreeJVMSize(bean):"-");
-            	System.out.printf("\t[Info] Used JVM Memory Size=%d KB (%s)\n", (bean.getTotalJVMMemory()-bean.getFreeJVMMemory())/1024, pb!=null?pb.diffUsedJVMSize(bean):"-");
-            	System.out.printf("\t[Info] Total Memory Size=%d KB\n", bean.getTotalMemorySize());
-            	System.out.printf("\t[Info] Free Physical Memory Size=%d KB\n", bean.getFreePhysicalMemorySize());
-            	System.out.printf("\t[Info] Used Physical Memory Size=%d KB\n", bean.getUsedPyhsicalMemory());
+    			MonitorInfoBean bean = monitorSrvImpl.getMonitorInfoBean();    			
+    			System.out.printf("\t[Info] Set size=%,d...\n", testSet.size());
+    			System.out.printf("\t[Info] Total JVM Memory Size=%,d KB (%s)\n", bean.getTotalJVMMemory()/1024, pb!=null?pb.diffTotalJVMSize(bean):"-");
+            	System.out.printf("\t[Info] Free JVM Memory Size=%,d KB (%s)\n", bean.getFreeJVMMemory()/1024, pb!=null?pb.diffFreeJVMSize(bean):"-");
+            	System.out.printf("\t[Info] Used JVM Memory Size=%,d KB (%s)\n", (bean.getTotalJVMMemory()-bean.getFreeJVMMemory())/1024, pb!=null?pb.diffUsedJVMSize(bean):"-");
+            	System.out.printf("\t[Info] Total System Memory Size=%,d KB\n", bean.getTotalPhyscailMemorySize());
+            	System.out.printf("\t[Info] Free System Memory Size=%,d KB\n", bean.getFreePhysicalMemorySize());
+            	System.out.printf("\t[Info] Used System Memory Size=%,d KB\n", bean.getUsedPyhsicalMemory());
             	System.out.println();
             	pb = bean;
             	Thread.sleep(1000);

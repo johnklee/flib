@@ -124,7 +124,7 @@ public class QSReader implements Iterator<String>, Iterable<String>{
         return pushbackStream;
 	}
 	
-	public void open(String encoding) throws Exception
+	public void open(String encoding) throws IOException
 	{
 		Reader decoder = null;
 		if(encoding.equalsIgnoreCase("big5")||encoding.equalsIgnoreCase("big-5")){			
@@ -185,7 +185,7 @@ public class QSReader implements Iterator<String>, Iterable<String>{
 		return -1;
 	}
 	
-	public void open() throws Exception{
+	public void open() throws IOException{
 		this.open(ENCODING);
 	}
 

@@ -1,11 +1,13 @@
 package flib.util;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class FSQueue<T> implements Queue<T>{
+public class FSQueue<T> implements Queue<T>, Serializable{
+	private static final long serialVersionUID = 1L;
 	private Queue<T> 	queue = new LinkedList<T>();
 	private int 		size_of_queue = 10;
 	public T 			lastPopup = null;

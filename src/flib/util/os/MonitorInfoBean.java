@@ -21,7 +21,7 @@ public class MonitorInfoBean {
   
     /** */  
     /** 總物理內存. */  
-    private long totalMemorySize;  
+    private long totalPhyscailMemorySize;  
   
     /** */  
     /** 剩餘的物理內存. */  
@@ -79,12 +79,12 @@ public class MonitorInfoBean {
         this.totalJVMMemory = totalMemory;  
     }  
   
-    public long getTotalMemorySize() {  
-        return totalMemorySize;  
+    public long getTotalPhyscailMemorySize() {  
+        return totalPhyscailMemorySize;  
     }  
   
-    public void setTotalMemorySize(long totalMemorySize) {  
-        this.totalMemorySize = totalMemorySize;  
+    public void setTotalPhyscailMemorySize(long totalMemorySize) {  
+        this.totalPhyscailMemorySize = totalMemorySize;  
     }  
   
     public int getTotalThread() {  

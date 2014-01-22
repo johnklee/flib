@@ -25,6 +25,8 @@ public class ArguParser {
 	public boolean 						isSuccessive = false;
 	public List<String>					lastArgument = new LinkedList<String>();
 	public Argument						missArgument=null;
+	public boolean 						showAA=true; // Show argument attributes
+	public List<String>					arguRegList;
 
 	public ArguParser() {
 		debugKit = JDebug.getLogger("ArguParser");
@@ -50,6 +52,7 @@ public class ArguParser {
 		
 		//System.out.printf("\t[Test] def=%d\n", def.size());
 		argsSet = new HashMap<String, Argument>();
+		arguRegList = new ArrayList<String>();
 		Set<Entry<String, Object>> s = def.entrySet();
 		Iterator<Entry<String, Object>> iter = s.iterator();
 		boolean isErr=false;
@@ -67,6 +70,7 @@ public class ArguParser {
 				continue;
 			}
 			argsSet.put(argStruct.getKey(), argStruct);
+			//arguRegList.add(argStruct.getKey());
 			//System.out.printf("\t[Test] %s\n", argStruct);
 
 			/* Parsing argument from command line */
@@ -107,15 +111,16 @@ public class ArguParser {
 		StringBuffer ssb = new StringBuffer("");
 		StringBuffer dsb = new StringBuffer("");
 		Set<String> keys = argsSet.keySet();
-		Iterator<String> ikeys = keys.iterator();
-		while (ikeys.hasNext()) {
-			Argument a = argsSet.get(ikeys.next());
-			//System.out.printf("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity);
-			//System.out.println(a.getKey() + ": " + a.getDescript());
-			if(a.getKey().startsWith("--")) dsb.append(String.format("%s: %s (%s)\r\n", a.getKey(), a.getDescript(), a.quantity));
-			else ssb.append(String.format("%s: %s (%s)", a.getKey(), a.getDescript(), a.quantity));
+		Iterator<String> ikeys = arguRegList.iterator();
+		//while (ikeys.hasNext()) {
+		if(arguRegList.size()==0) while(ikeys.hasNext()) arguRegList.add(ikeys.next()); 
+		for(int i=0; i<arguRegList.size(); i++) {
+			Argument a = argsSet.get(arguRegList.get(i));			
+			if(a.getKey().startsWith("--")) dsb.append(String.format("%s: %s %s\r\n", a.getKey(), a.getDescript(), 
+					showAA?String.format("(%s)", a.quantity):""));
+			else ssb.append(String.format("%s: %s %s", a.getKey(), a.getDescript(), showAA?String.format("(%s)", a.quantity):""));
 			
-			if(a.config!=null && a.config.restrict.equals(EArguRestrict.Required)) ssb.append(" *");
+			if(showAA && a.config!=null && a.config.restrict.equals(EArguRestrict.Required)) ssb.append(" *");
 			ssb.append("\r\n");
 		}
 		System.out.println(String.format("%s%s", ssb.toString(), dsb.toString()));

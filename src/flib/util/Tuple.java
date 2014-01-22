@@ -1,9 +1,11 @@
 package flib.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tuple {
+public class Tuple implements Serializable{
+	private static final long serialVersionUID = 1L;
 	public List<Object> datas = null;
 	
 	public Tuple(){datas = new ArrayList<Object>();}
@@ -13,6 +15,12 @@ public class Tuple {
 		for(Object o:objs) datas.add(o);
 	}
 	
+	@Override
+	public int hashCode(){
+		int hash=0;
+		for(int i=0; i<size(); i++) hash+=get(i).hashCode();
+		return hash;
+	}
 	public int size(){return datas.size();}
 	public Object get(int i){return datas.get(i);}
 	public Object set(int i, Object o){return datas.set(i, o);}
@@ -39,5 +47,5 @@ public class Tuple {
 			strBuf.append("]");
 		}
 		return strBuf.toString();
-	}
+	}	
 }

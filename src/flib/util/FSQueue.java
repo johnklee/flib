@@ -136,6 +136,18 @@ public class FSQueue<T> implements Queue<T>, Serializable{
 		return strBuf.toString();
 	}
 	
+	public String toString(String sep)
+	{
+		StringBuffer strBuf = new StringBuffer("");
+		if(size()>0)
+		{
+			Object obs[] = this.toArray();
+			strBuf.append(obs[0]);
+			for(int i=1; i<obs.length; i++) strBuf.append(String.format("%s%s", sep, obs[i]));
+		}
+		return strBuf.toString();
+	}
+	
 	/**
 	 * @param args
 	 */

@@ -38,6 +38,7 @@ public class _StreamGobbler extends Thread {
         this.isShow = isShow;
         this.logMsg = sbuf;
     }
+    
     public _StreamGobbler(InputStream is, EStreamType type, ExecCmd cmd, boolean isShow, boolean hasPrefix)
     {
     	this.is = is;

@@ -31,6 +31,73 @@ public class ArguParser {
 	public ArguParser() {
 		debugKit = JDebug.getLogger("ArguParser");
 	}
+	
+	
+	protected void _parse(HashMap<String, Object> def, List<String> argList) {
+		// System.out.printf("\t[Test] def=%d\n", def.size());
+		argsSet = new HashMap<String, Argument>();
+		arguRegList = new ArrayList<String>();
+		Set<Entry<String, Object>> s = def.entrySet();
+		Iterator<Entry<String, Object>> iter = s.iterator();
+		boolean isErr = false;
+		while (iter.hasNext()) {
+			Entry<String, Object> e = iter.next(); // definition of argument
+			Object key = e.getValue();
+			Argument argStruct = null;
+			if (key instanceof String) {
+				argStruct = new Argument(e.getKey(), (String) e.getValue());
+			} else if (key instanceof ArguConfig) {
+				argStruct = new Argument(e.getKey(), (ArguConfig) e.getValue());
+			} else {
+				System.err.printf("\t[Error] Illegal argument setting=%s!\n",
+						key);
+				debugKit.warning(String.format(
+						"Illegal argument setting! (%s)", key));
+				continue;
+			}
+			arguRegList.add(argStruct.getKey());
+			argsSet.put(argStruct.getKey(), argStruct);
+			// arguRegList.add(argStruct.getKey());
+			// System.out.printf("\t[Test] %s\n", argStruct);
+
+			/* Parsing argument from command line */
+			if (!isErr && !argStruct.parseArgu(argList)) {
+				/* Handle: Fail to parsing */
+				debugKit.warning(String.format(
+						"Parsing error on argument->%s!", argStruct));
+				// System.err.printf("\t[Error] Parsing error on argument->%s!\n",
+				// argStruct);
+				// this.showArgus();
+				isErr = true;
+				// continue;
+			}
+			if (!isErr) {
+				if (!argStruct.isSet()
+						&& argStruct.config != null
+						&& argStruct.config.restrict
+								.equals(EArguRestrict.Required)) {
+					// System.err.printf("\t[Error] Argument='%s: %s' is required!\n",
+					// argStruct.getKey(), argStruct.getDescript());
+					missArgument = argStruct;
+					//return;
+				}
+			}
+
+			/*
+			 * for (String a : argList) { if (argStruct.checkArgu(a)) {
+			 * argList.remove(a); break; } }
+			 */
+		}
+		for (String larg : argList)
+			lastArgument.add(larg);
+		if(missArgument==null) isSuccessive = true;
+	}
+	
+	public ArguParser(HashMap<String, Object> def, List<String> argList)
+	{
+		this();
+		_parse(def, argList);		
+	}
 
 	/**
 	 * BD : Constructor to receive argument defination and actual argument from console.
@@ -50,58 +117,7 @@ public class ArguParser {
 			}
 		}
 		
-		//System.out.printf("\t[Test] def=%d\n", def.size());
-		argsSet = new HashMap<String, Argument>();
-		arguRegList = new ArrayList<String>();
-		Set<Entry<String, Object>> s = def.entrySet();
-		Iterator<Entry<String, Object>> iter = s.iterator();
-		boolean isErr=false;
-		while (iter.hasNext()) {
-			Entry<String, Object> e = iter.next(); // definition of argument
-			Object key = e.getValue();
-			Argument argStruct = null;
-			if (key instanceof String) {
-				argStruct = new Argument(e.getKey(), (String) e.getValue());
-			} else if (key instanceof ArguConfig) {
-				argStruct = new Argument(e.getKey(), (ArguConfig) e.getValue());
-			} else {
-				System.err.printf("\t[Error] Illegal argument setting=%s!\n", key);
-				debugKit.warning(String.format("Illegal argument setting! (%s)", key));
-				continue;
-			}
-			argsSet.put(argStruct.getKey(), argStruct);
-			//arguRegList.add(argStruct.getKey());
-			//System.out.printf("\t[Test] %s\n", argStruct);
-
-			/* Parsing argument from command line */
-			if(!isErr && !argStruct.parseArgu(argList))
-			{
-				/*Handle: Fail to parsing*/
-				debugKit.warning(String.format("Parsing error on argument->%s!", argStruct));
-				//System.err.printf("\t[Error] Parsing error on argument->%s!\n", argStruct);
-				//this.showArgus();
-				isErr=true;
-				//continue;
-			}
-			if(!isErr)
-			{
-				if(!argStruct.isSet() &&
-				   argStruct.config!=null && 
-				   argStruct.config.restrict.equals(EArguRestrict.Required))
-				{
-					//System.err.printf("\t[Error] Argument='%s: %s' is required!\n", argStruct.getKey(), argStruct.getDescript());
-					missArgument = argStruct;
-					//return;
-				}
-			}
-			
-			/*
-			 * for (String a : argList) { if (argStruct.checkArgu(a)) {
-			 * argList.remove(a); break; } }
-			 */
-		}
-		for(String larg:argList) lastArgument.add(larg);
-		isSuccessive = true;
+		_parse(def, argList);
 	}
 
 	/**
@@ -244,10 +260,10 @@ public class ArguParser {
 	public static void main(String args[]) {
 		/* The first mark of argument will be the unique key for searching */
 		/* Step1 : Define argument meaning */
-		//String fargs[] = { "-s", "single value", "-a=test", "-b",  "-m", "value1", "value2" , "value3", "-c" };
-		String fargs[] = {  };
+		String fargs[] = { "-s", "single value", "-a1=test", "-b",  "-m", "value1", "value2" , "value3", "-c" };
+		//String fargs[] = {  };
 		HashMap<String, Object> defineOfArgu = new HashMap<String, Object>();
-		defineOfArgu.put("-a,--auto", "Auto Setup.");
+		defineOfArgu.put("-a1,--auto", "Auto Setup.");
 		defineOfArgu.put("-b,--block", "Block Until...");
 		defineOfArgu.put("-d,-D,--decode", "Decode");
 		defineOfArgu.put("-c,-C,--Check", new ArguConfig("Check Mail...", EArguQuantity.SIGN));

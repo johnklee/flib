@@ -3,8 +3,11 @@ package flib.util;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class SetOP<E> {
+	public static Class SetClass = HashSet.class;
+	
 	/**
 	 * BD: Another version of DIFF. Keep elements only in sa or sb
 	 * @param sa
@@ -51,6 +54,19 @@ public class SetOP<E> {
 		return DIFF(sa,sb);
 	}
 	
+	
+	protected Set<E> newSet()
+	{
+		Set<E> s = null;
+		try {
+			s = (Set<E>)SetClass.newInstance();
+		} catch (Exception e) {
+			s = new HashSet<E>();
+			e.printStackTrace();
+		} 
+		return s;
+	}
+	
 	/**
 	 * BD: A new set can also be constructed by determining which members two sets have "in common". 
 	 *     The intersection of A and B, denoted by A ∩ B, is the set of all things that are members of both A and B. 
@@ -62,7 +78,8 @@ public class SetOP<E> {
 	 */
 	public Set<E> INTERSECT(Set<E> sa, Set<E> sb)
 	{
-		Set<E> s =  new HashSet<E>();		
+		Set<E> s = newSet();
+			
 		if(sa.size()>sb.size())
 		{
 			s.addAll(sa);
@@ -86,7 +103,7 @@ public class SetOP<E> {
 	 */
 	public Set<E> UNION(Set<E> sa, Set<E> sb)
 	{
-		Set<E> s =  new HashSet<E>();		
+		Set<E> s =   newSet();
 		if(sa.size()>sb.size())
 		{
 			s.addAll(sa);
@@ -121,6 +138,7 @@ public class SetOP<E> {
 	
 	public static void main(String args[])
 	{
+		SetOP.SetClass = TreeSet.class;
 		Set<Integer> sa = new HashSet<Integer>();
 		Set<Integer> sb = new HashSet<Integer>();
 		SetOP<Integer> sop = new SetOP<Integer>();

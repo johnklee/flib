@@ -23,7 +23,20 @@ public class Tuple implements Serializable{
 	}
 	public int size(){return datas.size();}
 	public Object get(int i){return datas.get(i);}
-	public Object set(int i, Object o){return datas.set(i, o);}
+	public Object set(int i, Object o){
+		if(datas.size()>i) return datas.set(i, o);
+		else if(datas.size()+1==i) 
+		{
+			datas.add(o);
+			return o;
+		}
+		else 
+		{
+			for(int j=datas.size(); j<i; j++) datas.set(j, null);
+			datas.add(o);
+			return o;
+		}
+	}	
 	public void put(Object o){datas.add(o);}
 	public void puts(Object ...objs){for(Object o:objs) datas.add(o);}
 	public Object get(int i, Object def){
@@ -33,7 +46,7 @@ public class Tuple implements Serializable{
 	
 	public String getStr(int i){return (String)datas.get(i);}
 	public int getInt(int i){return (Integer)datas.get(i);}
-	
+	public Boolean getBoolean(int i){return (Boolean)datas.get(i);}
 	@Override
 	public String toString()
 	{

@@ -16,6 +16,7 @@ public class QSWriter extends Writer{
 	public BufferedWriter 		bw=null;
 	public static String 		ENCODING="UTF-8";
 	
+	public QSWriter(){}
 	public QSWriter(File of, boolean append) throws Exception
 	{
 		this.outFile = of;		
@@ -52,7 +53,7 @@ public class QSWriter extends Writer{
 			bw.append(String.format("%s%s", line, NEW_LINE));
 			if(flush) bw.flush();
 		}
-		else throw new IOException("Not open yet");
+		//else throw new IOException("Not open yet");
 	}
 	
 	public void line(String line) throws IOException{line(line, true);}
@@ -81,7 +82,7 @@ public class QSWriter extends Writer{
 		{
 			bw.flush();	
 		}
-		else throw new IOException("Not open yet");
+		//else throw new IOException("Not open yet");
 	}
 
 	@Override
@@ -90,6 +91,6 @@ public class QSWriter extends Writer{
 		{
 			bw.write(cbuf, off, len);
 		}
-		else throw new IOException("Not open yet");
+		//else throw new IOException("Not open yet");
 	}
 }

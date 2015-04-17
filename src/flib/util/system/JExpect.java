@@ -38,8 +38,4 @@ public class JExpect {
 		return sp;
 	}
 	
-	public static void main(String args[]) throws Exception
-	{
-			
-	}
 }

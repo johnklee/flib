@@ -15,6 +15,7 @@ public class QSWriter extends Writer{
 	public String				NEW_LINE = Envset.BreakLine;
 	public BufferedWriter 		bw=null;
 	public static String 		ENCODING="UTF-8";
+	public boolean				bShowOnConsole=false;
 	
 	public QSWriter(){}
 	public QSWriter(File of, boolean append) throws Exception
@@ -52,8 +53,19 @@ public class QSWriter extends Writer{
 		{
 			bw.append(String.format("%s%s", line, NEW_LINE));
 			if(flush) bw.flush();
+			if(bShowOnConsole) System.out.println(line);
 		}
 		//else throw new IOException("Not open yet");
+	}
+	
+	public void printf(String fmt, Object ...args) throws IOException
+	{
+		if(bw!=null)
+		{
+			String out = String.format(fmt, args);
+			bw.append(out);
+			if(bShowOnConsole) System.out.printf(fmt, args);
+		}
 	}
 	
 	public void line(String line) throws IOException{line(line, true);}

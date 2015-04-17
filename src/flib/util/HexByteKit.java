@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 public class HexByteKit {
 	public static int BigEndian=0;
 	public static int LittleEndian=1;
+	
     private static byte charToByte(char c){
         return (byte) "0123456789ABCDEF".indexOf(c);
     }
@@ -43,12 +44,13 @@ public class HexByteKit {
     }
     
     /**
-     * BD: Translate Integer to Byte Array.
+     * Translate Integer to Byte Array.
      * REF:
      * 		- http://stackoverflow.com/questions/2183240/java-integer-to-byte-array
-     * @param val: Integer value
+     * 
+     * @param val: Integer
      * @param endian: BigEndian=0; LittleEndian=1
-     * @return
+     * @return byte array
      */
     public static byte[] Int2Byte(int val, int endian)
     {    	
@@ -67,6 +69,12 @@ public class HexByteKit {
     	return bs;
     }
     
+    /**
+     * Translate Integer to Byte Array.
+     * 
+     * @param val: Integer
+     * @return byte array
+     */
     public static byte[] Int2Byte(int val){return Int2Byte(val, BigEndian);}
     
     public static Integer Bin2Int(String binStr)
@@ -212,10 +220,12 @@ public class HexByteKit {
     public static int Hex2Int(String hexStr) throws Exception{ return Byte2Int(Hex2Byte(hexStr));}
     
     /**
-     * BD: Translate byte array into binary string.
+     * Translate byte array into binary string.
+     * 
      * REF:
      *   - How to convert a byte to its binary string representation
      *     http://stackoverflow.com/questions/12310017/how-to-convert-a-byte-to-its-binary-string-representation
+     *     
      * @param b: Byte array
      * @param offset: Offset
      * @param len: Length 
@@ -251,6 +261,7 @@ public class HexByteKit {
     /**
      * <b>BD</b> : Used to transfer hex string into byte array. two hex string combines one byte. So that means the length of hex string
      *      should be even. Or the null will be returned.
+     *      
      * @param hexStr
      * @return
      */
@@ -273,7 +284,8 @@ public class HexByteKit {
     }
     
     /**
-     * BD: Translate byte array into corresponding hex string.
+     * Translate byte array into corresponding hex string.
+     * 
      * @param b: Byte array.
      * @param offset: Offset from significant bit
      * @param len: Length of byte array <b>
@@ -286,7 +298,8 @@ public class HexByteKit {
     }
     
     /**
-     * BD: Translate byte array into corresponding hex string.
+     * Translate byte array into corresponding hex string.
+     * 
      * @param b: Byte array.
      * @param offset: Offset from significant bit
      * @param len: Length of byte array <b>

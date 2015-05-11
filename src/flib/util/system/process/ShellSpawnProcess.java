@@ -391,4 +391,34 @@ public class ShellSpawnProcess implements ISpawnProcess{
 			throws Exception {
 		throw new java.lang.UnsupportedOperationException();
 	}
+
+	@Override
+	public int expect_exact(List<String> patterns, int timeout) throws Exception {
+		before = after = null;
+		lastExpect.clear();	
+		String line;
+		try
+		{
+			 while(true)
+			 {
+				 if(timeout>0) line = readLine(timeout);
+				 else line = readLine();				 
+				 lastExpect.add(line);
+				 
+				 for(int i=0; i<patterns.size(); i++)
+				 {
+					 if(line.equals(patterns.get(i))) 
+					 {
+						 after = line;
+						 return i;
+					 }
+				 }				 
+			 }
+		}
+		catch(Exception e){throw e;}
+		finally
+		{
+			before = StringUtils.join(lastExpect, NewLine);	
+		}
+	}
 }

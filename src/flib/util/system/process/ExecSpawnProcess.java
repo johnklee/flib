@@ -321,8 +321,7 @@ public class ExecSpawnProcess implements ISpawnProcess{
 				 if(line.equals(pattern)) return true;
 			 }
 		}
-		catch(Exception e){}			
-		return false;
+		catch(Exception e){throw e;}			
 	}
 	
 	public boolean isDone(){ return (bSout&bSerr);}
@@ -440,5 +439,22 @@ public class ExecSpawnProcess implements ISpawnProcess{
 
 	public int getLastExitValue() { return lastExitValue;}
 	public String getBefore(){return before;}
-	public String getAfter(){return after;}	
+	public String getAfter(){return after;}
+
+	@Override
+	public int expect_exact(List<String> patterns, int timeout) throws Exception {
+		lastExpect.clear();	
+		String line;
+		try
+		{
+			 while(true)
+			 {
+				 if(timeout>0) line = readLine(timeout);
+				 else line = readLine();		
+				 lastExpect.add(line);
+				 for(int i=0; i<patterns.size(); i++) if(line.equals(patterns.get(i))) return i;
+			 }
+		}
+		catch(Exception e){throw e;}			
+	}	
 }

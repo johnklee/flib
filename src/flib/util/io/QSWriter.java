@@ -68,6 +68,23 @@ public class QSWriter extends Writer{
 		}
 	}
 	
+	public void println(String msg) throws IOException
+	{
+		if(bw!=null)
+		{
+			this.line(msg);
+		}
+	}
+	
+	public void println() throws IOException
+	{
+		if(bw!=null)
+		{			
+			bw.append(NEW_LINE);
+			if(bShowOnConsole) System.out.println();
+		}
+	}
+	
 	public void line(String line) throws IOException{line(line, true);}
 	
 	@Override
@@ -104,5 +121,13 @@ public class QSWriter extends Writer{
 			bw.write(cbuf, off, len);
 		}
 		//else throw new IOException("Not open yet");
+	}
+	
+	public void write(String str) throws IOException {
+		if(bw!=null)
+		{
+			super.write(str);	
+			if(bShowOnConsole) System.out.printf(str);
+		}
 	}
 }

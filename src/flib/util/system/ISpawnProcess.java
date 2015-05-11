@@ -32,6 +32,7 @@ public interface ISpawnProcess {
 	public boolean expect(String pattern) throws Exception;
 	public boolean expect_exact(String pattern, int timeout) throws Exception;
 	public boolean expect_exact(String pattern) throws Exception;
+	public int	   expect_exact(List<String> patterns, int timeout) throws Exception;
 	
 	public boolean isDone();
 	public void close();

@@ -15,15 +15,14 @@ import java.io.*;
  * @author John-Lee
  */
 public class ExecCmd {
-    private String cmdline;
-    private String params = null;
-    private StringBuffer soutBuf;
-    private StringBuffer serrBuf;
-    private boolean bSout = false;
-    private boolean bSerr = false;
-    public static boolean hasPrefix = true;
-    
-    private int lastExitValue = -1;
+    private String 				cmdline;
+    private String 				params = null;
+    private StringBuffer 		soutBuf;
+    private StringBuffer 		serrBuf;
+    private boolean 			bSout = false;
+    private boolean 			bSerr = false;
+    public static boolean 		hasPrefix = true;    
+    private int 				lastExitValue = -1;
 
     public ExecCmd()
     {
@@ -85,7 +84,7 @@ public class ExecCmd {
         sb.close();
     }
 
-    public void exec(String cmdline,String keyword) throws IOException {
+    public void exec(String cmdline, String keyword) throws IOException {
         Runtime runtime = Runtime.getRuntime();
         Process process = null;
         String line = null;
@@ -204,7 +203,8 @@ public class ExecCmd {
     }
     
     public String execWithStdoutReturn(String cmdline, boolean isShow, boolean pipeError) throws IOException {
-        try {
+        try 
+        {
             StringBuffer res = new StringBuffer("");
             Runtime runtime = Runtime.getRuntime();
             Process process = null;            

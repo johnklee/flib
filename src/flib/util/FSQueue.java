@@ -20,6 +20,16 @@ public class FSQueue<T> implements Queue<T>, Serializable{
 	
 	public T access(int i){return ((LinkedList<T>)queue).get(i);}
 
+	public int addAll(T[] objs)
+	{
+		if(objs!=null)
+		{
+			for(int i=0; i<objs.length; i++) queue.add(objs[i]);
+			return objs.length;
+		}
+		return -1;
+	}
+	
 	public boolean addAll(Collection<? extends T> objs) {
 		return queue.addAll(objs);
 	}
@@ -146,6 +156,55 @@ public class FSQueue<T> implements Queue<T>, Serializable{
 			for(int i=1; i<obs.length; i++) strBuf.append(String.format("%s%s", sep, obs[i]));
 		}
 		return strBuf.toString();
+	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if(o instanceof FSQueue)
+		{
+			FSQueue fq = (FSQueue)o;
+			int cs = size();
+			if(cs==fq.size())
+			{
+				for(int i=0; i<cs; i++) if(!this.access(i).equals(fq.access(i))) return false;
+			}
+			return true;
+		}
+		else if(o.getClass().isArray())
+		{
+			if(o.getClass().getName().trim().startsWith("[B"))
+			{
+				byte oAry[] = (byte[])o;
+				int cs = size();
+				if(cs==oAry.length)
+				{
+					for(int i=0; i<cs; i++) if(!this.access(i).equals(oAry[i])) return false;
+					return true;
+				}				
+			}
+			if(o.getClass().getName().trim().startsWith("[I"))
+			{
+				int oAry[] = (int[])o;
+				int cs = size();
+				if(cs==oAry.length)
+				{
+					for(int i=0; i<cs; i++) if(!this.access(i).equals(oAry[i])) return false;
+					return true;
+				}				
+			}
+			else
+			{				
+				byte oAry[] = (byte[])o;
+				int cs = size();
+				if(cs==oAry.length)
+				{
+					for(int i=0; i<cs; i++) if(!this.access(i).equals(oAry[i])) return false;
+					return true;
+				}				
+			}
+		}
+		return false;
 	}
 	
 	/**

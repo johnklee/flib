@@ -16,6 +16,7 @@ public class ByteStreamGobbler implements Runnable{
 	//private BufferedReader				reader = null;			// STDERR/STDOUT BufferedReader obj
 	private boolean						bKeep=true;				// Flag to keep log or not
 	private Channel						channel;
+	private int							escapeCharacter=0x1d;	// Sign to stop interact mode				
 	
 	/*public ByteStreamGobbler(ISpawnProcess process, BufferedReader reader, EStreamType type, boolean isShow, StringBuffer sbuf) {
 		this.process=process;
@@ -56,6 +57,12 @@ public class ByteStreamGobbler implements Runnable{
         		while(is.available()>0){
         			int i=is.read(tmp, 0, 1024);
         			if(i<0)break;
+        			/*for(int s=0; s<i; s++) 
+        				if(tmp[s]==escapeCharacter)
+        				{
+        					// Stop interactive mode
+        					
+        				}*/
         			System.out.print(new String(tmp, 0, i));
         		}
         		if(channel.isClosed()){

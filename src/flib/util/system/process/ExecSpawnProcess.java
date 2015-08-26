@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import flib.util.FSQueue;
 import flib.util.inner.enums.EStreamType;
 import flib.util.system.ISpawnProcess;
 import flib.util.system.thd.ExStderrThd;
@@ -23,7 +24,7 @@ import flib.util.system.thd.ExStdoutThd;
 import flib.util.system.thd.StreamGobbler;
 import flib.util.system.thd.WatchDog;
 
-public class ExecSpawnProcess implements ISpawnProcess{
+public class ExecSpawnProcess implements ISpawnProcess{	
 	private List<String> 			lastExpect = new ArrayList<String>();
 	private StreamGobbler 			infoGobbler=null;
 	private ExecutorService 		executor = Executors.newFixedThreadPool(2);
@@ -113,7 +114,7 @@ public class ExecSpawnProcess implements ISpawnProcess{
 	{
 		if(termOSWriter==null) termOSWriter = new BufferedWriter(new OutputStreamWriter(termOS));
 		//System.out.println(line);
-		termOSWriter.write(String.format("%s\r\n", line));
+		termOSWriter.write(String.format("%s%s", line, NewLine));
 		termOSWriter.flush();
 	}
 	
@@ -170,6 +171,44 @@ public class ExecSpawnProcess implements ISpawnProcess{
 			termISReader = new BufferedReader(new InputStreamReader(termIS));
 		}
 		return termISReader.readLine();
+	}
+	
+	public String readInLine(int timeout) throws Exception
+	{
+		final List<Byte> lineBuf = new ArrayList<Byte>();
+		final byte nbs[] = NewLine.getBytes();
+		Callable<Integer> readTask = new Callable<Integer>() {		        
+	        public Integer call() throws Exception {
+	            byte b;
+	            FSQueue<Byte> fsq = new FSQueue<Byte>(nbs.length);
+	            while(true)
+	            {
+	            	b = (byte)termIS.read();
+	            	lineBuf.add(b); fsq.add(b);
+	            	if(fsq.equals(nbs)) {	            		
+	            		break;
+	            	}
+	            }
+	            return lineBuf.size();
+	        }
+	    };
+	    Future<Integer> future = executor.submit(readTask);
+	    int bc=-1;
+	    try{
+	    	bc = future.get(timeout, TimeUnit.MILLISECONDS);
+	    } catch(Exception e)
+	    {
+	    	//e.printStackTrace();
+	    	bc = lineBuf.size();
+	    }
+	    if(bc>0)
+	    {
+	    	byte bs[] = new byte[lineBuf.size()];
+	    	for(int i=0; i<lineBuf.size(); i++) bs[i]=lineBuf.get(i);
+	    	String line = new String(bs);	    	
+	    	return line;
+	    }
+	    else return null;
 	}
 	
 	public String readLine(int timeout) throws Exception
@@ -256,18 +295,26 @@ public class ExecSpawnProcess implements ISpawnProcess{
 		{
 			 while(true)
 			 {
-				 // Check stderr
-				 //System.out.printf("\t[Test] Check Stderr:\n'%s'\n", errBuf.toString());
+				 // Check stderr				
 				 if(ptn.matcher(errBuf.toString()).find()) return true;
 				 
 				 // Check stdout
-				 String line = readLine(timeout);					 
+				 String line = readInLine(timeout);
+				 if(line==null) break;
+				 if(ptn.matcher(line).find()) {
+					 after = line;
+					 StringBuffer befBuf = new StringBuffer();
+					 for(String l:lastExpect) befBuf.append(String.format("%s%s", l, NewLine));
+					 before = befBuf.toString().trim();
+					 return true;
+				 }
 				 lastExpect.add(line);
-				 //System.out.printf("\t[Test] Check Stdout: '%s'...\n", line);
-				 if(ptn.matcher(line).find()) return true;
 			 }
 		}
 		catch(Exception e){}			
+		StringBuffer befBuf = new StringBuffer();
+		for(String l:lastExpect) befBuf.append(String.format("%s%s", l, NewLine));
+		before = befBuf.toString().trim();
 		return false;
 	}
 	
@@ -278,15 +325,13 @@ public class ExecSpawnProcess implements ISpawnProcess{
 		Pattern ptn = Pattern.compile(pattern);
 		while(!isDone())
 		{
-			// Check stderr
-			//System.out.printf("\t[Test] Check Stderr:\n'%s'\n", errBuf.toString());
+			// Check stderr			
 			if(ptn.matcher(errBuf.toString()).find()) return true;
 			 
 			// Check stdout
 			line = readLine();							
 			if(line==null) break;
-			//lastExpect.add(line);
-			System.out.printf("\t[Test] Check Stdout: '%s'...\n", line);
+			//System.out.printf("\t[Test] Check Stdout: '%s'...\n", line);
 			if(ptn.matcher(line).find()) return true;
 		}
 		return false;
@@ -382,13 +427,7 @@ public class ExecSpawnProcess implements ISpawnProcess{
     	}	    	
     	
     	lastExitValue=-1;
-    	executor.shutdownNow();
-    	
-    	//System.out.printf("\t[Info] Bye...(%d)\n", process.exitValue());
-    	/*while(!isDone()) {
-    		System.out.printf("bSout=%s; bSerr=%s...\n", bSout, bSerr);
-    		try{Thread.sleep(2000);}catch(Exception e){}
-    	}*/
+    	executor.shutdownNow();    	
     }
     
     public int waitUtilEnd() throws Exception

@@ -53,6 +53,13 @@ public class Perm {
 		return permList;
 	}
 	
+	public static List<List<String>> PERM_FROM_SET(Set<String> set)
+	{
+		List<List<String>> permList = new ArrayList<List<String>>();
+		
+		return permList;
+	}
+	
 	protected static void _RECV_PERM_FROM_SETS(List<Set<String>> setList, List<List<String>> permList, int level, List<String> seq)
 	{
 		if(level == setList.size()-1) // Final level

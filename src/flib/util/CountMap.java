@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
@@ -83,6 +84,33 @@ public class CountMap implements Iterable<Pair>, Serializable{
 	public void clear()
 	{
 		cntMap.clear();
+	}
+	
+	/**
+	 * BD: Return category(s) with most count
+	 * 
+	 * @return List of category
+	 */
+	public List<Object> major()
+	{
+		List<Object> majors = new ArrayList<Object>();
+		Object cate=null; int cnt=-1;
+		Iterator<Pair> iter = this.iterator();
+		while(iter.hasNext())
+		{
+			Pair p = iter.next();
+			if(p.cnt>cnt) 
+			{
+				majors.clear();
+				cnt=p.cnt;
+				majors.add(p.key);
+			}
+			else if(p.cnt==cnt)
+			{
+				majors.add(p.key);
+			}			
+		}
+		return majors;
 	}
 	
 	/**

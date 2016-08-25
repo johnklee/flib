@@ -80,4 +80,27 @@ public class TestHexByteKit {
     	assertEquals("00000010-00000001-00000000",HexByteKit.Byte2Bin(bs, 1, 3, "-", HexByteKit.LittleEndian));
     	//System.out.printf("%s\n", HexByteKit.Byte2Bin(bs, 1, 3, "-", HexByteKit.LittleEndian));
     }
+    
+    @Test
+    public void testHex2Bin()
+    {
+    	String hexStrs[] = {"12F"};
+    	String binStrs[] = {"000100101111"};
+    	try
+    	{
+    		for(int i=0; i<hexStrs.length; i++)
+        	{
+    			
+    			String hxs = hexStrs[i];
+    			String bns = binStrs[i];
+    			String obs = kit.Hex2Bin(hxs);
+        		//System.out.printf("%s(%d)=%s\n", hxs, Integer.parseInt(hxs, 16), obs);
+        		assertEquals(bns, obs);
+        	}
+    	}
+    	catch(Exception e)
+    	{
+    		fail(String.format("Exception: %s", e));
+    	}
+    }
 }

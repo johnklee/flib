@@ -218,6 +218,11 @@ public class HexByteKit {
      */
     public static int Byte2Int(byte[] b) throws Exception{ return Byte2Int(b, BigEndian);}
     public static int Hex2Int(String hexStr) throws Exception{ return Byte2Int(Hex2Byte(hexStr));}
+    public static String Hex2Bin(String hexStr) throws Exception {
+    	String binStr = Byte2Bin(Hex2Byte(hexStr));
+    	if(binStr.startsWith("0000")) binStr = binStr.substring(4);
+    	return binStr;
+    }
     
     /**
      * Translate byte array into binary string.
@@ -268,9 +273,13 @@ public class HexByteKit {
     public static byte[] Hex2Byte(String hexStr) {
         Logger logKit = JDebug.getLogger("HexByteKit");
         if(hexStr.startsWith("0x")) hexStr = hexStr.substring(2, hexStr.length());
-        if(hexStr == null || hexStr.isEmpty() || (hexStr.length()%2>1)) {
+        if(hexStr == null || hexStr.isEmpty()) {
             logKit.warning("Wrong format of Hex String!");
             return null;
+        }
+        if((hexStr.length()%2!=0))
+        {
+        	hexStr = String.format("0%s", hexStr);
         }
         String hexStrUp = hexStr.toUpperCase();
         int length = hexStrUp.length()/2;
